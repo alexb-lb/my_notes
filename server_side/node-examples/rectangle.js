@@ -1,16 +1,15 @@
-var rect = require('./rect1.js');
-
-function solveRect(l, b) {
-  console.log("Start calcing rectangle");
-
-  if (l < 0 || b < 0) {
-    console.log("Rectangle params should be greater then zero: length = " + l + ", breadth = " + b);
-  } else {
-    console.log("Area is " + rect.area(l, b));
-    console.log("Perimeter is " + rect.perimeter(l, b));
+module.exports = function (x, y, callback) {
+  try {
+    if (x < 0 || y < 0) {
+      throw new Error("Rectangle params < 0: l=" + x + ", and b=" + y);
+    }
+    else
+      callback(null, {
+        perimeter: function (x, y) { return (2 * (x + y)); },
+        area: function (x, y) { return (x * y); }
+      });
   }
-}
-
-solveRect(5, 12);
-solveRect(4, 2);
-solveRect(-3, 4);
+  catch (error) {
+    callback(error, null);
+  }
+};
