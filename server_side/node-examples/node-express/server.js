@@ -2,17 +2,26 @@
  * Created by bobrenko on 31.05.2016.
  */
 var express = require('express');
-
-// позволяет писать логи
 var morgan = require('morgan');
+
+// позволяет читать body запроса к серверу
+var bodyParser = require('body-parse');
 
 var hostname = 'localhost';
 var port = 3000;
 
 var app = express();
 
-// dev - один из готовых шаблонов вывода логов
 app.use(morgan('dev'));
+
+// если придет боди в формате жсон, используем парсер
+app.use(bodyParser.json());
+
+// вызывает функцию, когда приходит запрос на /dishes
+app.all('/dishes', function (req, res, next){
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  next();
+});
 
 // любой запрос (например about.html) будет искаться в папке public
 // __dirname - абсолютный путь к папке (оттуда, где лежит express)
