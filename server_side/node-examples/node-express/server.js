@@ -14,40 +14,47 @@ var app = express();
 
 app.use(morgan('dev'));
 
-// если придет боди в формате жсон, используем парсер
-app.use(bodyParser.json());
+// определяем роутер, направляем в него парсер
+var dishRouter = express.Router();
+dishRouter.use(bodyParser.json());
 
-// вызывает функцию, когда приходит запрос на /dishes
-app.all('/dishes', function (req, res, next){
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  next(); // позволяет продолжить выполнение
-});
+// обрабатывыаем все запросы к корню через роутер
+dishRouter.route('/')
+  .all(function (req, res, next) {
+    res.writeHead(200, {'Content-type': 'text/plain'});
+    next();
+  })
+  .get(function (req, res, next){
+    res.end('Will send all the dishes to you!')
+  })
+  .post(function (req, res, next){
+    res.end('Will add the dish: ' + req.body.name + ' with details ' + req.body.description);
+  })
+  .delete(function (req, res, next){
+    res.end('Deleting all dishes');
+  });
 
-// по гету отдает что-то. Например, достает из БД
-// next не вызывается, так что выполнения функции процесс прерывается
-app.get('/dishes', function (req, res, next){
-  res.end('any data');
-});
+dishRouter.route('/:dishId')
+  .all(function (req, res, next){
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    next();
+  })
+  .get(function (req, res, next){
+    res.end('Will send details of the dish: ' + req.params.dishId);
+  })
+  .put(function (req, res, next){
+    res.end('Will update the dish: ' + req.body.name + ' with details: ' + req.body.description);
+  })
+  .delete(function (req, res, next){
+    res.end('Deleting dish ' + req.params.dishId);
+  });
 
-// по посту добавляет новую информацию
-app.post('/dishes', function (req, res, next){
-  res.end('Will add data ' + req.body.name + ' with details: ' + req.body.description);
-});
-
-// по достает итем по ID. Добавить и delete - тоже самое
-app.get('/dishes/:dishId', function (req, res, next){
-  res.end('Will add data ' + req.params.dishId);
-});
-
-// модифицировать уже имеюийся итем
-app.put('/dishes/:dishId', function (req, res, next){
-  res.write('Updating data: ' + req.params.dishId + '/n');
-  res.end('Will update data ' + req.body.name + 'with details: ' + req.body.description);
-});
+// если урл - dishes, включает роутер
+app.use('/dishes', dishRouter);
 
 // любой запрос (например about.html) будет искаться в папке public
 app.use(express.static(__dirname + '/public'));
 
-app.listen(port, hostname, function (){
+app.listen(port, hostname, function () {
   console.log('Server running at http ' + hostname + ':' + port);
 });
