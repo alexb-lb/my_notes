@@ -1,0 +1,4 @@
+mongo/*
+.idea/*
+node_modules/*
+bin/*
