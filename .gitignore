@@ -1,4 +1,4 @@
-mongo/*
-.idea/*
-node_modules/*
-bin/*
+mongo/
+.idea/
+node_modules/
+bin/
