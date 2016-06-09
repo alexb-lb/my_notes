@@ -21,5 +21,19 @@ MongoClient.connect(url, function (err, db){
       assert.equal(err, null);  // ошибка в консоль
       console.log("After Insert:"); // или сообщение
       console.log(result.ops); // с массивом того, что было доабвлено
-    });
-});
+
+      // после инсерта посмотрим, что лежит в документе
+      // вызывается специально в коллбеке, что бы док уже существовал
+      collection.find({}).toArray(function (err,docs){
+        assert.equal(err, null);
+        console.log("Found:");
+        console.log(docs);
+
+        // еще один колбек - удаление коллекции документов
+        db.dropCollection("dishes", function (err, result){
+          assert.equal(err,null);
+          db.close();
+        });// end db.dropCollection
+      }); // end collection.find
+    }); // end collection.insertOne
+}); // end MongoClient.connect
