@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var assert = require('assert');
-var Dishes = require('./models/dishes1');
+var Dishes = require('./models/dishes3');
 
 // connection
 var url = 'mongodb://localhost:27017/conFusion';
@@ -10,40 +10,46 @@ var db = mongoose.connection; // делаем db - соединение с mongo
 db.on('error', console.error.bind(console, 'connection error:'));
 
 // если все хорошо, запускаем только один раз функцию, которая будет делать:
-db.once('open', function (){
+db.once('open', function () {
   console.log("Connected correctly to server");
 
-
-  Dishes.create({ // создать новой документ dish по шаблону схемы
+  Dishes.create({
     name: "Ultrapizza",
-    description: 'Test'
-  }, function (err, dish){ // колбек вызывается сразу после создания док-а
+    description: 'Test',
+    comments: [{rating: 3, comment: 'This is insane', author: 'Matt Daemon'}]
+  }, function (err, dish) {
     if (err) throw err;
 
     console.log('Dish created!');
     console.log(dish);
-    var id = dish._id; // сохраняем уникальный id документа
+    var id = dish._id;
 
-    setTimeout(function (){ // ставим таймер на 3 сек
-      Dishes.findByIdAndUpdate(id, { // UPDATE существующего док-а по id
-        $set: {
-          description: 'Updated Test' // указываем, на что меняем
-        }
-      }, {
-        new: true // какой док вернуть? true - измененный, false - старый
-      })
-        .exec(function (err, dish){ // выполнить после предыдущ. операции
+    setTimeout(function () {
+      Dishes.findByIdAndUpdate(id, {
+          $set: {description: 'Updated Test'}
+        }, {new: true})
+        .exec(function (err, dish) {
           if (err) throw err;
 
           console.log('Updated dish!');
           console.log(dish);
 
-          db.close();
-
-          db.collection('dishes').drop(function (){ // DROP
-            db.close(); // отключиться
+          // используем пуш, поскольку значения в массиве
+          dish.comments.push({
+            rating: 5,
+            comment: 'I\`m getting a sinking feeling!',
+            author: 'Leonardo di Caprio'
           });
-      })
+          // сохраним результат пуша
+          dish.save(function (err, dish) {
+            console.log("Updated Comments!");
+            console.log(dish);
+
+            db.collection('dishes').drop(function () {
+              db.close();
+            });
+          })
+        })
     }, 3000);
   })
 });
