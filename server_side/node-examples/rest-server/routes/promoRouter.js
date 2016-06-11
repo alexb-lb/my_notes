@@ -10,9 +10,6 @@ router.route('/')
   .get(function (req, res, next){
     res.end('Will send all the PROMO to you!')
   })
-  .post(function (req, res, next){
-    res.end('Will add the PROMO: ' + req.body.name + ' with details ' + req.body.description);
-  })
   .delete(function (req, res, next){
     res.end('Deleting all PROMOes');
   });
@@ -24,6 +21,9 @@ router.route('/:promoId')
   })
   .get(function (req, res, next){
     res.end('Will send details of the PROMO: ' + req.params.promoId);
+  })
+  .post(function (req, res, next){
+    res.end('Will add the PROMO: ' + req.body.name + ' with details ' + req.body.description);
   })
   .put(function (req, res, next){
     res.end('Will update the PROMO: ' + req.body.name + ' with details: ' + req.body.description);
