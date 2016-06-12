@@ -1,14 +1,16 @@
 var express = require('express');
-var router = express.Router();
+var dishRouter = express.Router();
 var mongoose = require('mongoose');
 
-var Dishes = require('/models/dishes');
+var Dishes = require('../models/dishes.js');
 
 // обрабатывыаем все запросы к корню через роутер
-router.route('/')
+dishRouter.route('/')
   .get(function (req, res, next) {
+
     Dishes.find({}, function (err, dishes) {
       if (err) throw err;
+      console.log(dishes);
       res.json(dishes); // отослать ответ в формате json
     })
   })
@@ -18,7 +20,7 @@ router.route('/')
       if (err) throw err;
 
       console.log('Dishes created!');
-      var id = data._id; // вернет уже dish с id из базы
+      var id = dish._id; // вернет уже dish с id из базы
       res.writeHead(200, {'Content-Type': 'text/plain'});
       res.end('Added the dish with id: ' + id);
     })
@@ -31,7 +33,8 @@ router.route('/')
     })
   });
 
-router.route('/:dishId') // post не нужен - мы можем добавить dish в общую коллекцию
+// dish по ID
+dishRouter.route('/:dishId') // post не нужен - мы можем добавить dish в общую коллекцию
   .get(function (req, res, next) {
     Dishes.findById(req.params.dishId, function (err, dish) {
       if (err) throw err;
@@ -55,4 +58,81 @@ router.route('/:dishId') // post не нужен - мы можем добави�
       });
   });
 
-module.exports = router;
+//  комменты
+dishRouter.route('/:dishId/comments')
+  .get(function (req, res, next) {
+    Dishes.findById(req.params.dishId, function (err, dish) {
+      if (err) throw err;
+      res.json(dish.comments); // извлекает из обьекта dish свойство c комментами
+    })
+  })
+  .post(function (req, res, next) {
+    Dishes.findById(req.params.dishId, function (err, dish) {
+      if (err) throw err;
+
+      dish.comments.push(req.body);
+      dish.save(function (err, dish){
+        if (err) throw err;
+
+        console.log('Updated comments!');
+        console.log(dish);
+        res.json(dish);
+      })
+    })
+  })
+  .delete(function (req, res, next) {
+    Dishes.findById(req.params.dishId, function (err, dish) {
+      if (err) throw err;
+
+      // находим количество комментов по данному блюду
+      for(var i = 0; i < dish.comments.length; i++){
+        // удаляем по id
+        dish.comments.id(dish.comments[i]._id).remove();
+      }
+
+      dish.save(function (err, dish){
+        if (err) throw err;
+
+        res.writeHead(200, {'Content-Type':'text/plain'});
+        res.end('Deleted all comments!');
+      })
+    });
+  });
+
+// для конкретного коммента
+dishRouter.route('/:dishId/comments/:commentId')
+  .get(function (req, res, next) {
+    Dishes.findById(req.params.dishId, function (err, dish) {
+      if (err) throw err;
+      // возвращаем из базы совпадающий id, который был в запросе
+      res.json(dish.comments.id(req.params.commentId));
+    })
+  })
+  .put(function (req, res, next) {
+    // не апдейтит, а удаляет старый коммент и пихает новый с другим ID
+    Dishes.findById(req.params.dishId, function (err, dish){
+      if (err) throw err;
+
+      dish.comments.id(req.params.commentId).remove();
+      dish.comments.push(req.body);
+      dish.save(function (err, dish){
+        if(err) throw err;
+
+        console.log('Updated comments!');
+        console.log(dish);
+        res.json(dish);
+      });
+    });
+  })
+  .delete(function (req, res, next) {
+    Dishes.findById(req.params.dishId, function (err, dish) {
+      dish.comments.id(req.params.commentId).remove();
+
+      dish.save(function (err, resp){
+        if (err) throw err;
+        res.json(resp);
+      })
+    });
+  });
+
+module.exports = dishRouter;

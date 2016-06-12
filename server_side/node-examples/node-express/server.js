@@ -1,6 +1,3 @@
-/**
- * Created by bobrenko on 31.05.2016.
- */
 var express = require('express');
 var morgan = require('morgan');
 
