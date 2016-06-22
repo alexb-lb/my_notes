@@ -3,10 +3,11 @@ var dishRouter = express.Router();
 var mongoose = require('mongoose');
 
 var Dishes = require('../models/dishes.js');
+var Verify = require('./verify');
 
 // обрабатывыаем все запросы к корню через роутер
 dishRouter.route('/')
-  .get(function (req, res, next) {
+  .get(Verify.verifyOrdinaryUser, function (req, res, next) {
 
     Dishes.find({}, function (err, dishes) {
       if (err) throw err;
@@ -14,7 +15,7 @@ dishRouter.route('/')
       res.json(dishes); // отослать ответ в формате json
     })
   })
-  .post(function (req, res, next) {
+  .post(Verify.verifyOrdinaryUser, function (req, res, next) {
     // первый параметр - спарсенное body с клиентского запроса на добавление
     Dishes.create(req.body, function (err, dish) {
       if (err) throw err;
@@ -25,7 +26,7 @@ dishRouter.route('/')
       res.end('Added the dish with id: ' + id);
     })
   })
-  .delete(function (req, res, next) {
+  .delete(Verify.verifyOrdinaryUser, function (req, res, next) {
     // удалить все данные из коллекции документов dishes
     Dishes.remove({}, function (err, dishes) {
       if (err) throw err;

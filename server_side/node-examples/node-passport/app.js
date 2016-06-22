@@ -42,7 +42,7 @@ var User = require('./models/user');
 app.use(passport.initialize());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
-passport.deserialilzeUser(User.deserializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -60,10 +60,10 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
-// возвразаем ошибки в формате json - делается в основном для Ангулара
+// возвращаем ошибки в формате json - делается в основном для Ангулара
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    res.(err.status || 500);
+    res.status(err.status || 500);
     res.json({ // json!
       message: err.message,
       error: err
