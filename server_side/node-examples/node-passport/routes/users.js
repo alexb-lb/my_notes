@@ -5,8 +5,12 @@ var User = require('../models/user'); // подключили созданную
 var Verify = require('./verify'); // проверка инфы о юзере через jsonWebTokens
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
+router.route('/').get(Verify.verifyAdmin, function (req, res, next) {
+
+  User.find({}, function (err, users) {
+    if (err) throw err;
+    res.json(users); // отослать ответ в формате json
+  })
 });
 
 // ссылка типа http://localhost:3000/users/register будет запускать код
@@ -20,35 +24,35 @@ router.post('/register', function (req, res) {
     new User({username: req.body.username}),
     req.body.password,
     function (err, user) { //callback, возвращает ошибку или нового зареганого юзера
-      if(err){
+      if (err) {
         return res.status(500).json({err: err}); // вернем статус 500 если ошибка
       }
 
       // если ошибки нет, проверяем, на самом ли деле юзер успешно прошел регистрацию
-      passport.authenticate('local')(req, res, function (){
+      passport.authenticate('local')(req, res, function () {
         return res.status(200).json({status: 'Registration successful!'});
       }); // passport.authenticate
     }); // User.register
 }); // router.post
 
 // ссылка типа http://localhost:3000/users/login будет запускать код
-router.post('/login', function (req, res, next){
-  passport.authenticate('local', function (err, user, info){
-    if(err){
+router.post('/login', function (req, res, next) {
+  passport.authenticate('local', function (err, user, info) {
+    if (err) {
       return next(err);
     }
 
     // если user == null,  возвращаем ошибку - вы не аутентифицированы
-    if(!user){
+    if (!user) {
       return res.status(401).json({
         err: info // может быть шибка: дубликат юзера и т.д.
       });
     }
 
     // метод, который пытается залогинить юзера
-    req.logIn(user, function (err){
+    req.logIn(user, function (err) {
       // если ошибка - вернем статус 500
-      if(err) return res.status(500).json({ err: 'Could not log in user' });
+      if (err) return res.status(500).json({err: 'Could not log in user'});
 
       console.log('User in users: ', user);
 
@@ -64,7 +68,7 @@ router.post('/login', function (req, res, next){
 });
 
 // ссылка типа http://localhost:3000/users/logout будет запускать код
-router.get('/logout', function(req, res){
+router.get('/logout', function (req, res) {
   req.logout(); // метод вылогинивает пользователя
   req.status(200).json({
     status: 'Bye!'

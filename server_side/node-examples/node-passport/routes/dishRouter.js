@@ -15,7 +15,7 @@ dishRouter.route('/')
       res.json(dishes); // отослать ответ в формате json
     })
   })
-  .post(Verify.verifyOrdinaryUser, function (req, res, next) {
+  .post(Verify.verifyAdmin, function (req, res, next) {
     // первый параметр - спарсенное body с клиентского запроса на добавление
     Dishes.create(req.body, function (err, dish) {
       if (err) throw err;
@@ -26,7 +26,7 @@ dishRouter.route('/')
       res.end('Added the dish with id: ' + id);
     })
   })
-  .delete(Verify.verifyOrdinaryUser, function (req, res, next) {
+  .delete(Verify.verifyAdmin, function (req, res, next) {
     // удалить все данные из коллекции документов dishes
     Dishes.remove({}, function (err, dishes) {
       if (err) throw err;
