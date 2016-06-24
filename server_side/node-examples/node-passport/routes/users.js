@@ -6,9 +6,8 @@ var Verify = require('./verify'); // проверка инфы о юзере ч�
 
 /* GET users listing. */
 router.route('/').get(Verify.verifyAdmin, function (req, res, next) {
-
   User.find({}, function (err, users) {
-    if (err) throw err;
+    //if (err) throw err;
     res.json(users); // отослать ответ в формате json
   })
 });
@@ -27,11 +26,19 @@ router.post('/register', function (req, res) {
       if (err) {
         return res.status(500).json({err: err}); // вернем статус 500 если ошибка
       }
-
-      // если ошибки нет, проверяем, на самом ли деле юзер успешно прошел регистрацию
-      passport.authenticate('local')(req, res, function () {
-        return res.status(200).json({status: 'Registration successful!'});
-      }); // passport.authenticate
+      // забираем имя и фамилию из запроса, если они были указаны
+      if(req.body.firstname) {
+        user.firstname = req.body.firstname;
+      }
+      if(req.body.lastname) {
+        user.larstname = req.body.lastname;
+      }
+      // сохраняет информацию о пользователе, а потом делает проверку аутентификации
+      user.save(function (err, user){
+        passport.authenticate('local')(req, res, function () {
+          return res.status(200).json({status: 'Registration successful!'});
+        }); // passport.authenticate
+      }); // user.save end
     }); // User.register
 }); // router.post
 
