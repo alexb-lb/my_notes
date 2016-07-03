@@ -6,7 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport'); // подключили паспорт модуль
-var authenticate = require('./authenticate');
+var LocalStrategy = require('passport-local').Strategy;
+
 var config = require('./config'); // добавили конфиг файл с настройками
 
 mongoose.connect(config.mongoUrl); // сослались на конфиг
@@ -43,7 +44,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // настройки паспорта
+var User = require('./models/user');
 app.use(passport.initialize());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use(express.static(path.join(__dirname, 'public')));
 

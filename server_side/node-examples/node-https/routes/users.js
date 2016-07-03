@@ -12,16 +12,9 @@ router.route('/').get(Verify.verifyAdmin, function (req, res, next) {
   })
 });
 
-router.post('/test', function (req, res){
-  console.log("suka")
-  //return res.status(200).json({status: req.body.username}); // вернем статус 500 если ошибка
-  // return res.status(200).json({status: "working"}); // вернем статус 500 если ошибка
-});
-
 // ссылка типа http://localhost:3000/users/register будет запускать код
 // post - подразумевает отправку информации в теле запроса - логин и пароль
 router.post('/register', function (req, res) {
-  console.log("register!Q@!");
   // User.register:
   // 1й параметр - имя пользователя
   // 2й параметр - пароль
