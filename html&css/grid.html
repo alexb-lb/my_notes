@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grid testing</title>
+  
+  <style>
+    /*basic styles */
+    .grid div, .grid-areas > * {
+      background-color: #28314E;
+      border: 1px solid #212941;
+      border-radius: 8px;
+      padding: 8px 15px;
+      color: #fff;
+      font-size: 18px;
+      font-family: 'consolas';
+    }
+    
+    .grid div:nth-child(even), .grid-areas article, .grid-areas footer {
+      background-color: #455582;
+      border: 1px solid #363f60;
+    }
+    
+    /* BASIC GRID EXAMPLE*/
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      grid-gap: 10px;
+    }
+    
+    .grid div:nth-child(1) {
+      grid-column: 1/-1;
+      grid-row: 2;
+    }
+    
+    .grid div:nth-child(2) {
+      grid-column: 1/-1;
+      grid-row: 1;
+    }
+    
+    /* GRID AREA EXAMPLE*/
+    .grid-areas {
+      display: grid;
+      grid-gap: 10px;
+      grid-template-areas:
+              "header"
+              "article"
+              "aside"
+              "footer";
+    }
+    
+    header {
+      grid-area: header;
+    }
+    
+    article {
+      grid-area: article;
+    }
+    
+    aside {
+      grid-area: aside;
+    }
+    
+    footer {
+      grid-area: footer;
+    }
+    
+    @media (min-width: 640px) {
+      .grid-areas {
+        grid-template-columns: 1fr 2fr;
+        grid-template-areas:
+                "header header"
+                "aside article"
+                "aside footer";
+      }
+    }
+  </style>
+</head>
+<body>
+<!--&lt;!&ndash;start basic example&ndash;&gt;-->
+<!--<main class="grid">-->
+<!--<div>Item 1</div>-->
+<!--<div>Item 2</div>-->
+<!--<div>Item 3</div>-->
+<!--<div>Item 4</div>-->
+<!--</main>-->
+<!--&lt;!&ndash;end basic example&ndash;&gt;-->
+
+<!--start grid area example-->
+<main class="grid-areas">
+  <header>Header</header>
+  <article>
+    <h1>Article header</h1>
+    <p>Content here!!</p>
+  </article>
+  <aside>Sidebar</aside>
+  <footer>Footer</footer>
+</main>
+<!--end grid area example-->
+</body>
+</html>
